@@ -82,6 +82,10 @@ jobs:
           event: fail
           mentions: '<@U8XXXXXXX>, @tony.anaedu'
           template: basic_fail_1
+      # When there is a successful deployment, send a notification with a different template.
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
   test-frontend:
     docker:
