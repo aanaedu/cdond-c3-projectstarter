@@ -320,6 +320,7 @@ workflows:
           requires: [build-frontend]
       - build:
           context: slack-secrets
+          requires: [build-frontend]
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       #     filters:
