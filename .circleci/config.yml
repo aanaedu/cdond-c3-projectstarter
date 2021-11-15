@@ -82,6 +82,10 @@ jobs:
           event: fail
           mentions: '@channel, @tony.anaedu'
           template: basic_fail_1
+      - slack/notify:
+          branch_pattern: master
+          event: pass
+          template: success_tagged_deploy_1
 
   test-frontend:
     docker:
@@ -310,8 +314,6 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      - build:
-          context: slack-secrets
       - test-frontend:
           requires: [build-frontend]
       - test-backend:
@@ -320,6 +322,8 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
+      - build:
+          context: slack-secrets
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       #     filters:
