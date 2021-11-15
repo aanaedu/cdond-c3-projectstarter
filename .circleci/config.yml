@@ -78,7 +78,7 @@ jobs:
           event: fail
           template: basic_fail_1
       - slack/notify:
-          branch_pattern: production
+          branch_pattern: master
           event: fail
           mentions: '@channel, @tony.anaedu'
           template: basic_fail_1
