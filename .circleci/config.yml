@@ -183,10 +183,10 @@ jobs:
            root: ~/
            paths:
              - project/.circleci/ansible/inventory.txt
-      #  - destroy-environment:
-      #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-      #  - destroy-environment:
-      #     stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+       - destroy-environment:
+          stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+       - destroy-environment:
+          stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
 
   configure-infrastructure:
     docker:
@@ -206,10 +206,10 @@ jobs:
          command: |
            cd .circleci/ansible
            ansible-playbook -i inventory.txt configure-server.yml
-    #  - destroy-environment:
-    #      stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-    #  - destroy-environment:
-    #      stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+     - destroy-environment:
+         stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+     - destroy-environment:
+         stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
 
   run-migrations:
     docker:
@@ -249,7 +249,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP = $(aws ec2 describe-instances \
+            export BACKEND_IP=$(aws ec2 describe-instances \
                                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                                   --filters 'Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}')
             export API_URL="http://${BACKEND_IP}:3030"
