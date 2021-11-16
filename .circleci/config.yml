@@ -29,6 +29,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
+            echo "workflow: <<parameters.workflow_id>> | ${CIRCLE_WORKFLOW_ID:0:7}"
             SUCCESS = $(curl -H "token: 9464636a-aced-4f46-b7bc-2fa683bc6685" \ 
                       --request GET "https://api.memstash.io/values/migration_<<parameters.workflow_id>>")
             if(( $SUCCESS==1 ));
@@ -238,12 +239,13 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run: yum install -y tar gzip
       - attach_workspace:
           at: ~/
       - run:
           name: Install dependencies
           command: |
-            yum install -y tar gzip gcc-c++ make
+            yum install -y gcc-c++ make
             curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
             yum install -y nodejs
       - run:
@@ -276,6 +278,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run: yum install -y tar gzip
       - add_ssh_keys:
           fingerprints: ['be:d5:58:ec:ef:9d:2e:a0:b1:5d:c6:ce:4c:6f:47:c2']
       - attach_workspace:
@@ -283,7 +286,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum install -y tar gzip gcc-c++ make epel-release ansible
+            yum install -y gcc-c++ make epel-release ansible
             curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
             yum install -y nodejs
       - run:
