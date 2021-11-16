@@ -148,9 +148,11 @@ jobs:
 
   deploy-infrastructure:
      docker:
-       - image: amazon/aws-cli:2.3.6
+       - image: amazon/aws-cli
      steps:
        - checkout
+       - add_ssh_keys:
+          fingerprints: ['08:18:32:f5:6d:09:42:79:f5:f2:1e:27:67:38:11:bc']
        - run: yum install -y tar gzip
        - run:
            name: Ensure back-end infrastructure exists
