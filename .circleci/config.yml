@@ -238,15 +238,12 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - checkout
-      - run: yum install -y tar gzip
-      - attach_workspace:
-          at: ~/
+      - checkout 
       - run:
           name: Install dependencies
           command: |
             yum install -y gcc-c++ make
-            curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
+            curl -sL https://rpm.nodesource.com/setup_14.x | bash -
             yum install -y nodejs
       - run:
           name: Get backend url
@@ -275,10 +272,9 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
-      - run: yum install -y tar gzip
       - add_ssh_keys:
           fingerprints: ['be:d5:58:ec:ef:9d:2e:a0:b1:5d:c6:ce:4c:6f:47:c2']
       - attach_workspace:
@@ -286,9 +282,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum install -y gcc-c++ make epel-release ansible
-            curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
-            yum install -y nodejs
+            apk add --update ansible
+            apk add --update curl
+            apk add --update nodejs npm
       - run:
           name: Deploy backend
           command: |
