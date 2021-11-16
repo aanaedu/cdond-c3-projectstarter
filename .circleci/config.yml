@@ -31,7 +31,7 @@ commands:
           command: |
             echo "workflow: <<parameters.workflow_id>> | ${CIRCLE_WORKFLOW_ID:0:7}"
             SUCCESS = $(curl -H "token: 9464636a-aced-4f46-b7bc-2fa683bc6685" \ 
-                      --request GET "https://api.memstash.io/values/migration_<<parameters.workflow_id>>")
+                      --request GET "https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}")
             if(( $SUCCESS==1 ));
             then
               cd ~/project/backend
@@ -177,6 +177,7 @@ jobs:
              aws ec2 describe-instances \
                 --query 'Reservations[*].Instances[*].PublicIpAddress' \
                 --output text >> inventory.txt
+             cat inventory.txt
        - persist_to_workspace:
            root: ~/
            paths:
@@ -228,11 +229,11 @@ jobs:
               curl -H "Content-Type: text/plain" -H "token: 9464636a-aced-4f46-b7bc-2fa683bc6685" \
               --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             fi
-      # - destroy-environment:
-      #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-      # - destroy-environment:
-      #     stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-      # - revert-migrations
+      - destroy-environment:
+          stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment:
+          stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations
 
   deploy-frontend:
     docker:
@@ -242,15 +243,14 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum install -y gcc-c++ make
-            curl -sL https://rpm.nodesource.com/setup_14.x | bash -
-            yum install -y nodejs
+            yum install epel-release
+            yum install -y nodejs npm
       - run:
           name: Get backend url
           command: |
             export BACKEND_IP = $(aws ec2 describe-instances \
                                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                                  --filters 'Name="backend-${CIRCLE_WORKFLOW_ID:0:7}"')
+                                  --filters 'Name=backend-${CIRCLE_WORKFLOW_ID:0:7}')
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             echo "${BACKEND_IP}"
@@ -264,11 +264,11 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      # - destroy-environment:
-      #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-      # - destroy-environment:
-      #     stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-      # - revert-migrations
+      - destroy-environment:
+          stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment:
+          stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations
 
   deploy-backend:
     docker:
@@ -298,11 +298,11 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml 
-      # - destroy-environment:
-      #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-      # - destroy-environment:
-      #     stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-      # - revert-migrations
+      - destroy-environment:
+          stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment:
+          stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations
 
 #   smoke-test:
 #     docker:
@@ -367,18 +367,19 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - build:
-          context: slack-secrets
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - build:
+      #     context: slack-secrets
       - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [build-frontend, build-backend]
+          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
         #  filters:
         #   branches:
         #     only: [test-feature-branch]
