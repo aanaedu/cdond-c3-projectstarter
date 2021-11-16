@@ -182,24 +182,28 @@ jobs:
        - destroy-environment:
           stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
 
-#   configure-infrastructure:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # Your code here
-#             exit 1
-#       - run:
-#           name: Configure server
-#           command: |
-#             # Your code here
-#             exit 1
-#       # Here's where you will add some code to rollback on failure
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+     - checkout
+     - add_ssh_keys:
+         fingerprints: ['be:d5:58:ec:ef:9d:2e:a0:b1:5d:c6:ce:4c:6f:47:c2']
+     - attach_workspace:
+         at: ~/
+     - run:
+         name: Install dependencies
+         command: |
+           apk add --update ansible
+     - run:
+         name: Config server
+         command: |
+           cd .circleci/ansible
+           ansible-playbook -i inventory.txt configure-server.yml
+     - destroy-environment:
+         stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+     - destroy-environment:
+         stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
 
 #   run-migrations:
 #     docker:
@@ -334,8 +338,8 @@ workflows:
 #          filters:
 #           branches:
 #             only: [test-feature-branch]
-#      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
+       - configure-infrastructure:
+           requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
