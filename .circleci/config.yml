@@ -200,6 +200,7 @@ jobs:
          name: Install dependencies
          command: |
            apk add --update ansible
+           pip install awscli
      - run:
          name: Config server
          command: |
@@ -215,6 +216,10 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - run:
+         name: Install dependencies
+         command: |
+           apt-get install awscli -y
       - run:
           name: Run migrations
           command: |
@@ -285,6 +290,7 @@ jobs:
             apk add --update ansible
             apk add --update curl
             apk add --update nodejs npm
+            pip install awscli
       - run:
           name: Deploy backend
           command: |
