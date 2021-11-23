@@ -252,6 +252,8 @@ jobs:
     steps:
       - checkout 
       - run: yum install -y tar gzip
+      - attach_workspace:
+          at: ~/
       - run:
           name: Install dependencies
           command: |
@@ -275,11 +277,11 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      - destroy-environment:
-          stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-      - destroy-environment:
-          stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-      - revert-migrations
+      # - destroy-environment:
+      #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+      # - destroy-environment:
+      #     stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+      # - revert-migrations
 
   deploy-backend:
     docker:
@@ -310,11 +312,11 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml 
-      - destroy-environment:
-          stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-      - destroy-environment:
-          stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-      - revert-migrations
+      # - destroy-environment:
+      #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+      # - destroy-environment:
+      #     stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+      # - revert-migrations
 
   smoke-test:
     docker:
@@ -351,6 +353,11 @@ jobs:
             else
               return 1
             fi
+      # - destroy-environment:
+      #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+      # - destroy-environment:
+      #     stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+      # - revert-migrations
 
 #   cloudfront-update:
 #     docker:
@@ -366,6 +373,11 @@ jobs:
 #           command: |
 #             # your code here
 #       # Here's where you will add some code to rollback on failure
+        # - destroy-environment:
+        #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+        # - destroy-environment:
+        #     stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+        # - revert-migrations
 
 # cleanup:
 #     docker:
