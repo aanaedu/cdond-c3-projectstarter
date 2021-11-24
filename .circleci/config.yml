@@ -296,11 +296,11 @@ jobs:
           name: Install dependencies
           command: |
             apk update
-            apk add --update ansible aws-cli openssh-client tar
+            apk add --update ansible openssh-client tar
             # apk add --update ansible
             # apk add --update curl
             # apk add --update nodejs npm
-            # pip install awscli
+            pip install awscli
       - run:
           name: Deploy backend
           command: |
