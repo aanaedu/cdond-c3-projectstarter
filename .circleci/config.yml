@@ -263,7 +263,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            BACKEND_IP=$(cat .circleci/ansible/backend_ip.txt)
+            BACKEND_IP=$(cat ~/project/.circleci/ansible/backend_ip.txt)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL: ${API_URL}"
             echo "BACKEND_IP: ${BACKEND_IP}"
@@ -295,25 +295,24 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk update
-            apk add --update ansible openssh-client tar
-            # apk add --update ansible
+            # apk update
+            # apk add --update ansible openssh-client tar
+            apk add --update ansible
             # apk add --update curl
-            # apk add --update nodejs npm
-            pip install awscli
+            apk add --update nodejs npm
       - run:
           name: Deploy backend
           command: |
             cd backend
-            # npm i
-            # npm run build
+            npm i
+            npm run build
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
-            ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt deploy-backend.yml 
+            ansible-playbook -i inventory.txt deploy-backend.yml
       # - destroy-environment:
       #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
       # - destroy-environment:
