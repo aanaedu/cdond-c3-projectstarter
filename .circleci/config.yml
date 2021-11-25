@@ -297,6 +297,9 @@ jobs:
           command: |
             apk add --update ansible
             apk add --update nodejs npm
+            # for delete env and revert migration
+            apk add --update curl
+            pip install awscli
       - run:
           name: Deploy backend
           command: |
